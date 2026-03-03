@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#1a1a2e" stroke="#5865F2" stroke-width="3"/>
+
+  <!-- Chat bubble shape -->
+  <path d="M45 60 Q45 40 65 40 L135 40 Q155 40 155 60 L155 110 Q155 130 135 130 L90 130 L65 155 L70 130 L65 130 Q45 130 45 110 Z"
+        fill="#2d2d44" stroke="#5865F2" stroke-width="2"/>
+
+  <!-- Brain icon (simplified) -->
+  <g transform="translate(100, 82)" fill="none" stroke="#5865F2" stroke-width="2.5" stroke-linecap="round">
+    <!-- Left hemisphere -->
+    <path d="M-2 -25 Q-20 -25 -22 -12 Q-24 0 -15 5 Q-25 10 -20 22 Q-15 32 -2 28"/>
+    <!-- Right hemisphere -->
+    <path d="M2 -25 Q20 -25 22 -12 Q24 0 15 5 Q25 10 20 22 Q15 32 2 28"/>
+    <!-- Center line -->
+    <line x1="0" y1="-25" x2="0" y2="28"/>
+    <!-- Neural connections -->
+    <path d="M-15 -8 Q-5 -3 0 -8" stroke-width="1.5"/>
+    <path d="M15 -8 Q5 -3 0 -8" stroke-width="1.5"/>
+    <path d="M-12 15 Q-5 10 0 15" stroke-width="1.5"/>
+    <path d="M12 15 Q5 10 0 15" stroke-width="1.5"/>
+  </g>
+
+  <!-- Small sparkle dots -->
+  <circle cx="60" cy="55" r="2" fill="#5865F2" opacity="0.6"/>
+  <circle cx="140" cy="55" r="2" fill="#5865F2" opacity="0.6"/>
+  <circle cx="75" cy="120" r="1.5" fill="#5865F2" opacity="0.4"/>
+  <circle cx="130" cy="120" r="1.5" fill="#5865F2" opacity="0.4"/>
+</svg>
