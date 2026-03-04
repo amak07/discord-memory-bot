@@ -18,8 +18,6 @@ export async function handleComponentInteraction(
 
   switch (action) {
     case 'save': {
-      // Task 6: Save confirmation flow
-      // @ts-ignore -- module created in Task 6
       const { handleSaveInteraction } = await import('./save-confirm.js');
       await handleSaveInteraction(interaction);
       break;
