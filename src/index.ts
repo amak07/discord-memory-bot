@@ -4,6 +4,7 @@ import { initDb } from "./services/db.js";
 import { handleSave } from "./commands/save.js";
 import { handleRecall } from "./commands/recall.js";
 import { handleNotes } from "./commands/notes.js";
+import { handleComponentInteraction } from "./interactions/handler.js";
 
 const client = new Client({
   intents: [
@@ -18,28 +19,38 @@ client.once(Events.ClientReady, (c) => {
 });
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-
-  try {
-    switch (interaction.commandName) {
-      case "save":
-        await handleSave(interaction);
-        break;
-      case "recall":
-        await handleRecall(interaction);
-        break;
-      case "notes":
-        await handleNotes(interaction);
-        break;
-      default:
-        await interaction.reply({ content: "Unknown command.", ephemeral: true });
+  if (interaction.isChatInputCommand()) {
+    try {
+      switch (interaction.commandName) {
+        case "save":
+          await handleSave(interaction);
+          break;
+        case "recall":
+          await handleRecall(interaction);
+          break;
+        case "notes":
+          await handleNotes(interaction);
+          break;
+        default:
+          await interaction.reply({ content: "Unknown command.", ephemeral: true });
+      }
+    } catch (error) {
+      console.error(`Unhandled error in command ${interaction.commandName}:`, error);
+      const reply = interaction.deferred || interaction.replied
+        ? interaction.editReply("An unexpected error occurred.")
+        : interaction.reply({ content: "An unexpected error occurred.", ephemeral: true });
+      await reply.catch(() => {});
     }
-  } catch (error) {
-    console.error(`Unhandled error in command ${interaction.commandName}:`, error);
-    const reply = interaction.deferred || interaction.replied
-      ? interaction.editReply("An unexpected error occurred.")
-      : interaction.reply({ content: "An unexpected error occurred.", ephemeral: true });
-    await reply.catch(() => {});
+  } else if (interaction.isButton() || interaction.isStringSelectMenu()) {
+    try {
+      await handleComponentInteraction(interaction);
+    } catch (error) {
+      console.error(`Unhandled error in component interaction ${interaction.customId}:`, error);
+      const reply = interaction.deferred || interaction.replied
+        ? interaction.editReply("An unexpected error occurred.")
+        : interaction.reply({ content: "An unexpected error occurred.", ephemeral: true });
+      await reply.catch(() => {});
+    }
   }
 });
 
