@@ -25,6 +25,24 @@ A Discord bot that saves and recalls conversation notes using AI summarization. 
 - **Types:** `src/types.ts` — shared TypeScript interfaces
 - **Command registration:** `src/deploy-commands.ts` — one-time script to register slash commands
 
+## Local Development Workflow
+
+Every time you start a dev session or after re-adding the bot to a server:
+
+```bash
+npm.cmd run deploy-commands   # Register slash commands (guild = instant)
+npm.cmd run dev               # Start bot with hot reload
+```
+
+**Why both steps?** Guild commands are tied to the bot's presence in the server. If the bot is kicked and re-added, commands must be re-registered. The bot process (`dev`) must also be running for it to respond.
+
+**Bot invite URL** (with required permissions — View Channels, Send Messages, Embed Links, Read Message History):
+```
+https://discord.com/oauth2/authorize?client_id=<DISCORD_CLIENT_ID>&permissions=117760&scope=bot%20applications.commands
+```
+
+**Checking logs:** Bot output goes to the terminal running `npm run dev`. When running via Claude's Bash tool in background, check the output file for errors.
+
 ## Environment Variables
 
 Required in `.env` (see `.env.example`):
@@ -32,6 +50,7 @@ Required in `.env` (see `.env.example`):
 ```
 DISCORD_TOKEN=           # Bot token from Discord Developer Portal
 DISCORD_CLIENT_ID=       # Application ID for slash command registration
+DISCORD_GUILD_ID=        # Server ID for instant guild command registration (dev mode)
 GEMINI_API_KEY=          # From Google AI Studio (ai.google.dev)
 TURSO_DATABASE_URL=      # From Turso dashboard
 TURSO_AUTH_TOKEN=        # From Turso dashboard

@@ -1,0 +1,26 @@
+{
+  "name": "discord-memory-bot",
+  "version": "1.0.0",
+  "description": "Discord bot that saves and recalls conversation notes using AI summarization",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "deploy-commands": "tsx src/deploy-commands.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "@google/generative-ai": "^0.21.0",
+    "@libsql/client": "^0.14.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "tsx": "^4.19.2",
+    "@types/node": "^20.17.10",
+    "vitest": "^2.1.8"
+  }
+}
