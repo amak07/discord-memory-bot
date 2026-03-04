@@ -33,8 +33,6 @@ export async function handleComponentInteraction(
       break;
     }
     case 'browse': {
-      // Task 8: Browse/pagination
-      // @ts-ignore -- module created in Task 8
       const { handleBrowseInteraction } = await import('./browse-pagination.js');
       await handleBrowseInteraction(interaction);
       break;

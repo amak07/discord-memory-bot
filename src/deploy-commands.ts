@@ -29,6 +29,14 @@ const commands = [
         .setDescription("Page number (default: 1)")
         .setMinValue(1)
     ),
+  new SlashCommandBuilder()
+    .setName("browse")
+    .setDescription("Browse notebooks and notes with pagination")
+    .addStringOption((option) =>
+      option
+        .setName("notebook")
+        .setDescription("Go directly to a specific notebook (optional)")
+    ),
 ].map((cmd) => cmd.toJSON());
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
