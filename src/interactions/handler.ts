@@ -23,15 +23,11 @@ export async function handleComponentInteraction(
       break;
     }
     case 'recall': {
-      // Task 7: Recall scope selection and results
-      // @ts-ignore -- module created in Task 7
       const { handleRecallInteraction } = await import('./recall-scope.js');
       await handleRecallInteraction(interaction);
       break;
     }
     case 'rsrc': {
-      // Task 7: Recall source viewing
-      // @ts-ignore -- module created in Task 7
       const { handleRecallSourceInteraction } = await import('./recall-sources.js');
       await handleRecallSourceInteraction(interaction);
       break;

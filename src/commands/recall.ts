@@ -1,39 +1,98 @@
-import { ChatInputCommandInteraction, EmbedBuilder } from "discord.js";
-import { searchNotes } from "../services/db.js";
-import { answerFromNotes, embedForQuery } from "../services/ai.js";
+import {
+  ChatInputCommandInteraction,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  StringSelectMenuBuilder,
+  MessageFlags,
+} from "discord.js";
+import { embedForQuery } from "../services/ai.js";
+import { listNotebooks } from "../services/db.js";
+import { resolveScope } from "../utils/scope.js";
+import { encodeCustomId } from "../utils/custom-ids.js";
+import { createErrorEmbed } from "../utils/embeds.js";
+import { pendingRecalls, type PendingRecall } from "../interactions/recall-scope.js";
+import crypto from "node:crypto";
 
 export async function handleRecall(interaction: ChatInputCommandInteraction): Promise<void> {
   const query = interaction.options.getString("query", true);
+  const scope = resolveScope(interaction);
 
-  await interaction.deferReply();
+  await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
   try {
     const queryEmbedding = await embedForQuery(query);
-    const notes = await searchNotes(interaction.guildId!, queryEmbedding);
+    const notebooks = await listNotebooks(scope);
 
-    if (notes.length === 0) {
-      await interaction.editReply(
-        "No saved notes yet. Use `/save <topic>` to save your first note."
-      );
+    if (notebooks.length === 0) {
+      await interaction.editReply({
+        embeds: [createErrorEmbed("No notebooks yet. Use `/save <topic>` to save your first note.")],
+      });
       return;
     }
 
-    const answer = await answerFromNotes(query, notes);
+    // Store pending recall
+    const recallId = crypto.randomUUID().slice(0, 8);
+    const pending: PendingRecall = {
+      query,
+      queryEmbedding,
+      scopeType: scope.scopeType,
+      scopeId: scope.scopeId,
+      userId: interaction.user.id,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+    };
+    pendingRecalls.set(recallId, pending);
 
-    const sources = notes
-      .slice(0, 3)
-      .map((n) => `"${n.topic}" (saved ${new Date(n.created_at).toLocaleDateString()})`)
-      .join(", ");
+    // Build notebook picker
+    if (notebooks.length <= 9) {
+      // Use buttons
+      const buttons = notebooks.map((nb) =>
+        new ButtonBuilder()
+          .setCustomId(encodeCustomId("recall", "scope", recallId, String(nb.id)))
+          .setLabel(nb.name)
+          .setStyle(ButtonStyle.Secondary)
+      );
+      buttons.push(
+        new ButtonBuilder()
+          .setCustomId(encodeCustomId("recall", "scope", recallId, "all"))
+          .setLabel("All Notebooks")
+          .setStyle(ButtonStyle.Primary)
+      );
 
-    const embed = new EmbedBuilder()
-      .setTitle("Memory Recall")
-      .setDescription(answer)
-      .setColor(0x5865f2)
-      .setFooter({ text: `Sources: ${sources}` });
+      // Split into rows of 5
+      const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+      for (let i = 0; i < buttons.length; i += 5) {
+        rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(buttons.slice(i, i + 5)));
+      }
 
-    await interaction.editReply({ embeds: [embed] });
+      await interaction.editReply({
+        content: `**Search in:**\nQuery: "${query}"`,
+        components: rows,
+      });
+    } else {
+      // Use select menu for many notebooks
+      const options = notebooks.map((nb) => ({
+        label: nb.name,
+        description: `${nb.note_count} note${nb.note_count === 1 ? "" : "s"}`,
+        value: String(nb.id),
+      }));
+      options.push({ label: "All Notebooks", description: "Search everything", value: "all" });
+
+      const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId(encodeCustomId("recall", "scope", recallId))
+        .setPlaceholder("Choose a notebook to search...")
+        .addOptions(options.slice(0, 25));
+
+      const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
+      await interaction.editReply({
+        content: `**Search in:**\nQuery: "${query}"`,
+        components: [row],
+      });
+    }
   } catch (error) {
     console.error("Recall command error:", error);
-    await interaction.editReply("Something went wrong while recalling notes. Please try again.");
+    await interaction.editReply({
+      embeds: [createErrorEmbed("Something went wrong.")],
+    });
   }
 }
