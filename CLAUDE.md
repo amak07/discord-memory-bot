@@ -56,6 +56,47 @@ TURSO_DATABASE_URL=      # From Turso dashboard
 TURSO_AUTH_TOKEN=        # From Turso dashboard
 ```
 
+## Production Deployment (Google Cloud)
+
+The bot runs on a GCP e2-micro VM (Always Free tier) with pm2 for process management.
+
+**Server:** Google Cloud e2-micro | Region: `us-central1` (Iowa) | OS: Ubuntu 24.04 LTS
+
+### First-Time Setup
+
+1. Create a GCP account at [cloud.google.com/free](https://cloud.google.com/free)
+2. Create a new project, then create a VM:
+   - Machine type: `e2-micro` | Region: `us-central1` | OS: Ubuntu 24.04 LTS | Disk: 30GB standard
+3. SSH in: `gcloud compute ssh <vm-name>` (or use GCP Console SSH)
+4. Clone repo and run setup:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/discord-memory-bot.git
+   cd discord-memory-bot
+   bash scripts/setup-server.sh
+   ```
+5. Create `.env` (setup script will prompt you), then re-run `bash scripts/setup-server.sh`
+
+### Pushing Updates
+
+```bash
+# On the server:
+bash scripts/update-server.sh
+```
+
+### Monitoring
+
+```bash
+pm2 status              # Is the bot running?
+pm2 logs discord-bot    # View logs (Ctrl+C to exit)
+pm2 monit               # Real-time dashboard
+pm2 restart discord-bot # Manual restart
+```
+
+### Slash Commands
+
+- With `DISCORD_GUILD_ID` set: guild commands (instant, dev only)
+- Without `DISCORD_GUILD_ID`: global commands (up to 1 hour to propagate, production)
+
 ## Beads Task Management
 
 Tasks persist across sessions in `.beads/`. Run at session start:
