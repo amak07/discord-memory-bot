@@ -76,10 +76,21 @@ The bot runs on a GCP e2-micro VM (Always Free tier) with pm2 for process manage
    ```
 5. Create `.env` (setup script will prompt you), then re-run `bash scripts/setup-server.sh`
 
-### Pushing Updates
+### CI/CD (Auto-Deploy)
+
+Pushes to `master` auto-deploy via GitHub Actions (`.github/workflows/deploy.yml`). The workflow SSHs into the VM and runs the update script.
+
+**GitHub Secrets required** (repo → Settings → Secrets → Actions):
+- `GCP_HOST` — VM external IP
+- `GCP_USERNAME` — SSH username
+- `GCP_SSH_KEY` — Ed25519 private key (created on VM)
+
+Check deploy status: GitHub repo → **Actions** tab.
+
+### Manual Updates
 
 ```bash
-# On the server:
+# On the server (if CI/CD isn't set up yet):
 bash scripts/update-server.sh
 ```
 
