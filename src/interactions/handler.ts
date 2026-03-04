@@ -38,8 +38,6 @@ export async function handleComponentInteraction(
       break;
     }
     case 'nb': {
-      // Task 9: Notebook management confirmations
-      // @ts-ignore -- module created in Task 9
       const { handleNotebookInteraction } = await import('./notebook-confirm.js');
       await handleNotebookInteraction(interaction);
       break;

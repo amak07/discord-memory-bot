@@ -5,6 +5,7 @@ import { handleSave } from "./commands/save.js";
 import { handleRecall } from "./commands/recall.js";
 import { handleNotes } from "./commands/notes.js";
 import { handleBrowse } from "./commands/browse.js";
+import { handleNotebook } from "./commands/notebook.js";
 import { handleComponentInteraction } from "./interactions/handler.js";
 
 const client = new Client({
@@ -34,6 +35,9 @@ client.on(Events.InteractionCreate, async (interaction) => {
           break;
         case "browse":
           await handleBrowse(interaction);
+          break;
+        case "notebook":
+          await handleNotebook(interaction);
           break;
         default:
           await interaction.reply({ content: "Unknown command.", ephemeral: true });

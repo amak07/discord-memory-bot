@@ -37,6 +37,47 @@ const commands = [
         .setName("notebook")
         .setDescription("Go directly to a specific notebook (optional)")
     ),
+  new SlashCommandBuilder()
+    .setName("notebook")
+    .setDescription("Manage notebooks (create, list, archive, delete)")
+    .addSubcommand((sub) =>
+      sub
+        .setName("create")
+        .setDescription("Create a new notebook")
+        .addStringOption((option) =>
+          option
+            .setName("name")
+            .setDescription("Name for the notebook")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("list")
+        .setDescription("List all notebooks")
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("archive")
+        .setDescription("Archive a notebook (notes preserved but hidden)")
+        .addStringOption((option) =>
+          option
+            .setName("name")
+            .setDescription("Name of the notebook to archive")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName("delete")
+        .setDescription("Delete a notebook and all its notes")
+        .addStringOption((option) =>
+          option
+            .setName("name")
+            .setDescription("Name of the notebook to delete")
+            .setRequired(true)
+        )
+    ),
 ].map((cmd) => cmd.toJSON());
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
